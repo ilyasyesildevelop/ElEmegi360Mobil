@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "790650900454",
+    "project_id": "fabrika360suite-ekohali-cloud",
+    "storage_bucket": "fabrika360suite-ekohali-cloud.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790650900454:android:8a2ef931a4efa823ffd027",
+        "android_client_info": {
+          "package_name": "com.greenlabs.development.elemegi360"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVvMTNUE2_BYmsrktU-90364Yl3-Y_iOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790650900454:android:f33f76563876439affd027",
+        "android_client_info": {
+          "package_name": "com.greenlabs.development.performans360"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVvMTNUE2_BYmsrktU-90364Yl3-Y_iOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790650900454:android:06c26c6b7b94bca0ffd027",
+        "android_client_info": {
+          "package_name": "com.greenlabs.development.uretim360"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVvMTNUE2_BYmsrktU-90364Yl3-Y_iOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790650900454:android:569a10c10b57b897ffd027",
+        "android_client_info": {
+          "package_name": "com.greenlabs.development.vardiya360"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVvMTNUE2_BYmsrktU-90364Yl3-Y_iOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790650900454-d7v6tfeb0hmp1nuj7tdvmd3klpkhe1gr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

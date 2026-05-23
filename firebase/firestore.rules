@@ -1,0 +1,7 @@
+// KAYNAK DOSYA DEĞİL — canlı kurallar suite kökündedir:
+//   Fabrika360Suite/firestore.rules  (Vardiya + Üretim + El Emeği ee_*)
+//
+// Yayınlama (Fabrika360Suite klasöründen):
+//   firebase deploy --only firestore:rules,firestore:indexes --project fabrika360suite-ekohali-cloud
+//
+// ElEmegi360Mobil/firebase/ altından deploy ETMEYİN; diğer uygulama kurallarını siler.

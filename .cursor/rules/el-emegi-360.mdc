@@ -1,0 +1,14 @@
+---
+description: El Emeği 360 Flutter — tasarım ve geliştirme kuralları
+globs: ElEmegi360Mobil/**/*
+alwaysApply: false
+---
+
+# El Emeği 360
+
+- Flutter Material 3; Compose/Vardiya kodunu kopyalama, aynı UX’i Dart’ta uygula.
+- Renkler: `lib/theme/el_emegi_colors.dart` — yeni renk eklemeden önce brief’e bak.
+- Firestore şema: `plan/EL_EMEGI_360_FIRESTORE_SCHEMA_DRAFT.md`
+- `kayitId` zaman damgası **kayıt tarihinden** (`dateKey`), `DateTime.now()` değil.
+- Editor mod: tek özellik / tek dosya odaklı değişiklik; geniş refaktörden kaçın.
+- Ürün bağlamı: `AGENTS.md`
