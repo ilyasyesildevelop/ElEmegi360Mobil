@@ -18,6 +18,7 @@ class ProfileStore extends ChangeNotifier {
   static const _keyRegisteredAt = 'registered_at_ms';
   static const _keyIban = 'iban';
   static const _keyNotifications = 'notifications_enabled';
+  static const _keyNotificationPermissionAsked = 'notification_permission_asked';
 
   WorkerProfile? _profile;
   bool _loaded = false;
@@ -31,7 +32,9 @@ class ProfileStore extends ChangeNotifier {
   String get ownerUid => _profile?.ownerUid ?? '';
   String get iban => _profile?.iban ?? '';
   bool _notificationsEnabled = false;
+  bool _notificationPermissionAsked = false;
   bool get notificationsEnabled => _notificationsEnabled;
+  bool get notificationPermissionAsked => _notificationPermissionAsked;
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -56,6 +59,8 @@ class ProfileStore extends ChangeNotifier {
       _profile = null;
     }
     _notificationsEnabled = prefs.getBool(_keyNotifications) ?? false;
+    _notificationPermissionAsked =
+        prefs.getBool(_keyNotificationPermissionAsked) ?? false;
     _loaded = true;
     notifyListeners();
   }
@@ -64,6 +69,13 @@ class ProfileStore extends ChangeNotifier {
     _notificationsEnabled = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyNotifications, value);
+    notifyListeners();
+  }
+
+  Future<void> markNotificationPermissionAsked() async {
+    _notificationPermissionAsked = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyNotificationPermissionAsked, true);
     notifyListeners();
   }
 
@@ -152,6 +164,7 @@ class ProfileStore extends ChangeNotifier {
           toplamMetre: r.toplamMetre,
           tutar: r.tutar,
           status: r.status,
+          odemeTarihi: r.odemeTarihi,
         ),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/records_store.dart';
 import '../../models/record_status.dart';
@@ -125,7 +126,10 @@ class _PeriodCard extends StatelessWidget {
                   _MetricRow(
                     label: 'Ödeme Tarihi',
                     child: Text(
-                      '—',
+                      period.odemeTarihi != null
+                          ? DateFormat('d MMMM yyyy', 'tr_TR')
+                              .format(period.odemeTarihi!.toLocal())
+                          : '—',
                       style: ElEmegiTypography.formLabel(context),
                     ),
                   ),

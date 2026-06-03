@@ -1,10 +1,12 @@
 # El Emeği 360 Mobil (Flutter)
 
-Fabrika 360 Suite — ev işçiliği (saçak, etiket, overlogu vb.) kayıt ve hakediş takibi.
+Fabrika 360 — ev işçiliği (saçak, etiket, overlogu vb.) kayıt ve hakediş takibi.
+
+**Git:** [ElEmegi360Mobil](https://github.com/ilyasyesildevelop/ElEmegi360Mobil) (bu klasör kendi deposudur).
 
 ## Editor modda açma
 
-1. Cursor’da **File → Open Folder** → `Fabrika360Suite/ElEmegi360Mobil`
+1. Cursor’da **File → Open Folder** → bu klasörün kökü (`ElEmegi360Mobil`)
 2. Sohbette **Editor** veya dar kapsamlı **Agent** kullan; `lib/` altını hedefle.
 3. Bağlam: `@AGENTS.md`, `@plan/EL_EMEGI_360_FIRESTORE_SCHEMA_DRAFT.md`
 
@@ -30,7 +32,7 @@ Android Studio / Cursor’u **PUB_CACHE ekledikten sonra yeniden başlatın**.
 Eski `C:` yolları `.flutter-plugins-dependencies` içinde kalmışsa Gradle yine patlar. **Bir kez** şunu çalıştırın:
 
 ```powershell
-cd Fabrika360Suite\ElEmegi360Mobil
+cd ElEmegi360Mobil
 .\scripts\fix-pub-cache.ps1
 ```
 
@@ -39,7 +41,6 @@ Sonra derleyin veya `.\scripts\run-android.ps1`
 Cursor terminali için `.vscode/settings.json` içinde `PUB_CACHE` tanımlıdır.
 
 ```bash
-cd Fabrika360Suite/ElEmegi360Mobil
 flutter pub get
 flutter run
 ```

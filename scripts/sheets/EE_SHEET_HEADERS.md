@@ -21,7 +21,7 @@ kayit_id | owner_uid | worker_key | ad_soyad | tarih | date_key | donem_key | ur
 ## EE_ODEME_OZET
 
 ```
-donem_key | owner_uid | toplam_tutar | kayit_sayisi | durum | odeme_tarihi | updated_at
+donem_key | owner_uid | worker_key | ad_soyad | toplam_tutar | kayit_sayisi | durum | odeme_tarihi | updated_at
 ```
 
 ## Apps Script test

@@ -8,6 +8,7 @@ import '../../core/app_meta.dart';
 import '../../data/local/profile_store.dart';
 import '../../data/remote/person_profile_repository.dart';
 import '../../data/remote/update_service.dart';
+import '../../services/local_notification_service.dart';
 import '../../theme/el_emegi_colors.dart';
 import '../../widgets/fabrika_form_card.dart';
 import '../../widgets/fabrika_gradient_button.dart';
@@ -43,6 +44,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _ibanController.dispose();
     super.dispose();
+  }
+
+  Future<void> _toggleNotifications(bool value) async {
+    if (value) {
+      final granted =
+          await LocalNotificationService.instance.requestPermission();
+      await ProfileStore.instance.setNotificationsEnabled(granted);
+      if (!granted && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Bildirim izni verilmedi. Ayarlardan açabilirsiniz.'),
+          ),
+        );
+      }
+    } else {
+      await ProfileStore.instance.setNotificationsEnabled(false);
+    }
+    if (mounted) {
+      setState(() {
+        _notificationsEnabled = ProfileStore.instance.notificationsEnabled;
+      });
+    }
   }
 
   Future<void> _saveIban() async {
@@ -197,9 +220,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: ElEmegiColors.softBlueGray.withValues(alpha: 0.7),
                 ),
                 title: const Text('Bildirimler', style: TextStyle(fontSize: 14)),
-                subtitle: Text('Yakında — şimdilik kapalı', style: subtitleStyle),
+                subtitle: Text(
+                  _notificationsEnabled
+                      ? 'Ödeme yatırıldığında sesli bildirim'
+                      : 'Kapalı — ödeme bildirimi almak için açın',
+                  style: subtitleStyle,
+                ),
                 value: _notificationsEnabled,
-                onChanged: null,
+                onChanged: _toggleNotifications,
               ),
               const Divider(height: 1, indent: 8, endIndent: 8),
               ListTile(

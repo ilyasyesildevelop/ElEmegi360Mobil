@@ -19,7 +19,7 @@ function setupEeSheets() {
     EE_PERSON: ["owner_uid", "worker_key", "ad_soyad", "iban", "locked", "platform", "app_version", "created_at", "iban_updated_at"],
     EE_PERSONEL: ["owner_uid", "worker_key", "ad_soyad", "iban", "locked", "platform", "app_version", "created_at", "iban_updated_at"],
     EE_KAYIT: ["kayit_id", "owner_uid", "worker_key", "ad_soyad", "tarih", "date_key", "donem_key", "urun_cinsi", "islem_turu", "olcu_label", "en", "boy", "adet", "iscilik_turu", "birim_fiyat", "toplam_metre", "tutar", "durum", "odeme_tarihi", "created_at", "updated_at", "synced_to_sheets"],
-    EE_ODEME_OZET: ["donem_key", "owner_uid", "toplam_tutar", "kayit_sayisi", "durum", "odeme_tarihi", "updated_at"]
+    EE_ODEME_OZET: ["donem_key", "owner_uid", "worker_key", "ad_soyad", "toplam_tutar", "kayit_sayisi", "durum", "odeme_tarihi", "updated_at"]
   };
   var obsolete = ["EE_CIHAZ", "EE_URUN_CINSI", "EE_ISLEM", "EE_OLCU", "EE_FIYAT", "EE_CINS"];
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -53,7 +53,7 @@ function handleRequest_(e) {
     }
     var action = e.parameter.action;
     var result = { status: "error", message: "Bilinmeyen action: " + action };
-    if (action === "ping") result = { status: "success", message: "El Emeği 360 Sheets API", version: "2.1" };
+    if (action === "ping") result = { status: "success", message: "El Emeği 360 Sheets API", version: "2.2" };
     else if (action === "getRecords" || action === "listPersons") {
       result = { status: "error", message: "Okuma devre dışı — birincil kaynak Firestore. GS yalnızca yedek yazma." };
     }
@@ -62,6 +62,9 @@ function handleRequest_(e) {
     else if (action === "registerDevice") result = registerPerson_(e.parameter);
     else if (action === "registerPerson") result = registerPerson_(e.parameter);
     else if (action === "updateIban") result = updateIban_(e.parameter);
+    else if (action === "deletePerson") result = deletePerson_(e.parameter);
+    else if (action === "saveOdemeOzet") result = saveOdemeOzet_(e.parameter);
+    else if (action === "deleteOdemeOzet") result = deleteOdemeOzet_(e.parameter);
     return output.setContent(JSON.stringify(result));
   } catch (err) {
     return output.setContent(JSON.stringify({ status: "error", message: String(err) }));
@@ -75,7 +78,10 @@ function handlePost_(payload) {
   if (action === "saveRecord") return saveRecord_(data);
   if (action === "registerDevice" || action === "registerPerson") return registerPerson_(data);
   if (action === "updateIban") return updateIban_(data);
-  if (action === "deleteRecord") {
+  if (action === "deletePerson") return deletePerson_(data);
+  if (action === "saveOdemeOzet") return saveOdemeOzet_(data);
+  if (action === "deleteOdemeOzet") return deleteOdemeOzet_(data);
+  if (action === "deleteRecord" || action === "deleteKayit") {
     var id = data.kayitId || data.kayit_id;
     return deleteRecord_({ kayit_id: id });
   }
@@ -165,6 +171,92 @@ function registerPerson_(data) {
   return { status: "success", data: { registered: true } };
 }
 
+function deletePerson_(data) {
+  var uid = data.ownerUid || data.owner_uid;
+  if (!uid) return { status: "error", message: "owner_uid zorunlu" };
+  var sheet = _personSheet_();
+  if (!sheet) return { status: "error", message: "EE_PERSON yok" };
+  if (_deleteFromSheet_(sheet.getName(), "owner_uid", uid)) {
+    return { status: "success", data: { deleted: true } };
+  }
+  return { status: "error", message: "Kişi bulunamadı" };
+}
+
+function saveOdemeOzet_(data) {
+  var sheet = _sheet_("EE_ODEME_OZET");
+  if (!sheet) return { status: "error", message: "EE_ODEME_OZET sayfası yok" };
+
+  var headers = _ensureHeaders_(sheet, [
+    "donem_key", "owner_uid", "worker_key", "ad_soyad", "toplam_tutar", "kayit_sayisi", "durum", "odeme_tarihi", "updated_at"
+  ]);
+
+  var donemKey = data.donemKey || data.donem_key || "";
+  var ownerUid = data.ownerUid || data.owner_uid || "";
+  var workerKey = data.workerKey || data.worker_key || "";
+  if (!donemKey || !ownerUid) return { status: "error", message: "donem_key ve owner_uid zorunlu" };
+
+  var now = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+  var rowData = {
+    donem_key: donemKey,
+    owner_uid: ownerUid,
+    worker_key: workerKey,
+    ad_soyad: data.adSoyad || data.ad_soyad || "",
+    toplam_tutar: data.toplamTutar != null ? data.toplamTutar : (data.odemeTutar != null ? data.odemeTutar : ""),
+    kayit_sayisi: data.kayitSayisi != null ? data.kayitSayisi : "",
+    durum: data.durum || "ODENDI",
+    odeme_tarihi: data.odemeTarihi || data.odeme_tarihi || now,
+    updated_at: now
+  };
+
+  var existingRow = 0;
+  var allRows = sheet.getDataRange().getDisplayValues();
+  for (var i = 1; i < allRows.length; i++) {
+    if (allRows[i][headers.indexOf("owner_uid")] === ownerUid && allRows[i][headers.indexOf("donem_key")] === donemKey) {
+      existingRow = i + 1;
+      break;
+    }
+  }
+
+  if (existingRow) {
+    headers.forEach(function(h, colIdx) {
+      sheet.getRange(existingRow, colIdx + 1).setValue(rowData[h] != null ? rowData[h] : "");
+    });
+  } else {
+    _appendRowByHeaders_(sheet, headers, rowData);
+  }
+
+  return { status: "success", data: { saved: true } };
+}
+
+/** Dönem özeti satırını siler (donem_key + owner_uid). Firestore birincil; GS yedek. */
+function deleteOdemeOzet_(data) {
+  var donemKey = data.donemKey || data.donem_key || "";
+  var ownerUid = data.ownerUid || data.owner_uid || "";
+  if (!donemKey || !ownerUid) return { status: "error", message: "donem_key ve owner_uid zorunlu" };
+
+  var sheet = _sheet_("EE_ODEME_OZET");
+  if (!sheet || sheet.getLastRow() < 2) {
+    return { status: "success", data: { deleted: false, notFound: true } };
+  }
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getDisplayValues()[0];
+  var ownerCol = headers.indexOf("owner_uid");
+  var donemCol = headers.indexOf("donem_key");
+  if (ownerCol < 0 || donemCol < 0) {
+    return { status: "error", message: "EE_ODEME_OZET sütunları bulunamadı" };
+  }
+
+  var rows = sheet.getRange(2, 1, sheet.getLastRow(), headers.length).getDisplayValues();
+  for (var i = rows.length - 1; i >= 0; i--) {
+    if (rows[i][ownerCol] === ownerUid && rows[i][donemCol] === donemKey) {
+      sheet.deleteRow(i + 2);
+      return { status: "success", data: { deleted: true } };
+    }
+  }
+
+  return { status: "success", data: { deleted: false, notFound: true } };
+}
+
 function updateIban_(data) {
   var sheet = _personSheet_();
   if (!sheet) return { status: "error", message: "EE_PERSON yok" };
@@ -210,7 +302,8 @@ function deleteRecord_(params) {
   if (_deleteFromSheet_("EE_KAYIT", "kayit_id", id)) {
     return { status: "success", data: { deleted: true } };
   }
-  return { status: "error", message: "Kayıt bulunamadı" };
+  // Firestore birincil kaynak; GS satırı hiç yedeklenmemiş olabilir (synced_to_sheets=false).
+  return { status: "success", data: { deleted: false, notFound: true } };
 }
 
 function _sheet_(name) {
@@ -222,7 +315,17 @@ function _ensureHeaders_(sheet, defaultHeaders) {
     sheet.appendRow(defaultHeaders);
     return defaultHeaders;
   }
-  return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getDisplayValues()[0];
+  var existing = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getDisplayValues()[0];
+  var merged = existing.slice();
+  defaultHeaders.forEach(function(h) {
+    if (merged.indexOf(h) < 0) {
+      merged.push(h);
+    }
+  });
+  if (merged.length !== existing.length) {
+    sheet.getRange(1, 1, 1, merged.length).setValues([merged]);
+  }
+  return merged;
 }
 
 function _appendRowByHeaders_(sheet, headers, rowObj) {

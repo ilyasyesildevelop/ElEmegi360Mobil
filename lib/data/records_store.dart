@@ -40,6 +40,13 @@ class RecordsStore extends ChangeNotifier {
       final list = byDonem[donemKey]!;
       final allPaid = list.every((r) => r.status == RecordStatus.odendi);
       final amount = list.fold(0.0, (s, r) => s + r.tutar);
+      DateTime? odemeTarihi;
+      for (final r in list) {
+        final dt = r.odemeTarihi;
+        if (dt != null && (odemeTarihi == null || dt.isAfter(odemeTarihi))) {
+          odemeTarihi = dt;
+        }
+      }
       DateTime labelDate;
       try {
         final parts = donemKey.split('-');
@@ -53,6 +60,7 @@ class RecordsStore extends ChangeNotifier {
         amount: amount,
         paid: allPaid,
         recordCount: list.length,
+        odemeTarihi: allPaid ? odemeTarihi : null,
       );
     }).toList();
   }

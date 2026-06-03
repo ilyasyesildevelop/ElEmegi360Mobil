@@ -22,6 +22,7 @@ class WorkRecord {
     required this.tutar,
     required this.status,
     this.toplamMetre,
+    this.odemeTarihi,
   });
 
   final String kayitId;
@@ -42,6 +43,7 @@ class WorkRecord {
   final double? toplamMetre;
   final double tutar;
   final RecordStatus status;
+  final DateTime? odemeTarihi;
 
   String get id => kayitId;
   DateTime get date => tarih;
@@ -130,12 +132,16 @@ class WorkRecord {
       toplamMetre: (data['toplamMetre'] as num?)?.toDouble(),
       tutar: (data['tutar'] as num?)?.toDouble() ?? 0,
       status: RecordStatus.fromFirestore(data['durum'] as String?),
+      odemeTarihi: _readDate(data['odemeTarihi']),
     );
   }
 
   static DateTime? _readDate(dynamic value) {
     if (value is Timestamp) return value.toDate();
     if (value is DateTime) return value;
+    if (value is String && value.trim().isNotEmpty) {
+      return DateTime.tryParse(value.trim());
+    }
     return null;
   }
 
@@ -158,6 +164,7 @@ class WorkRecord {
         'toplamMetre': toplamMetre,
         'tutar': tutar,
         'durum': status.firestoreValue,
+        if (odemeTarihi != null) 'odemeTarihi': odemeTarihi!.toIso8601String(),
       };
 
   factory WorkRecord.fromJson(Map<String, dynamic> json) {
@@ -180,6 +187,9 @@ class WorkRecord {
       toplamMetre: (json['toplamMetre'] as num?)?.toDouble(),
       tutar: (json['tutar'] as num).toDouble(),
       status: RecordStatus.fromFirestore(json['durum'] as String?),
+      odemeTarihi: json['odemeTarihi'] != null
+          ? DateTime.tryParse(json['odemeTarihi'] as String)
+          : null,
     );
   }
 }
@@ -191,6 +201,7 @@ class PaymentPeriod {
     required this.amount,
     required this.paid,
     required this.recordCount,
+    this.odemeTarihi,
   });
 
   final String donemKey;
@@ -198,4 +209,5 @@ class PaymentPeriod {
   final double amount;
   final bool paid;
   final int recordCount;
+  final DateTime? odemeTarihi;
 }
